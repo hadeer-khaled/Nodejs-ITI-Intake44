@@ -4,7 +4,7 @@ let [, , command] = process.argv;
 
 const todosFullPath = path.join(__dirname, "todos.json");
 
-const options = parseCommandLineArgs();
+const options = parseEditCommand();
 
 function readTodosFromFile(todosFullPath) {
   if (fs.existsSync(todosFullPath)) {
@@ -54,11 +54,21 @@ function generateIncrementalID() {
   }
 }
 function listToDo(todosArray) {
-  const todosStrings = todosArray
-    .map((todo) => `ID: ${todo.id} Title: ${todo.title} Status: ${todo.status}`)
-    .join("\n");
-  console.log(todosStrings);
+  const [, , , option, todoStatus] = process.argv;
+  const allowedStatusValues = ["to-do", "done", "in-progress"];
+
+  if (option === "-s" && allowedStatusValues.includes(todoStatus)) {
+    const filteredToDosArray = todosArray
+      .filter((todo) => todo.status === todoStatus)
+      .map(
+        (todo) => `ID: ${todo.id} Title: ${todo.title} Status: ${todo.status}`
+      )
+      .join("\n");
+    return console.log(filteredToDosArray);
+  }
+  console.log("Invalid Option or Todo Status");
 }
+
 function deleteToDo(idToRemove, todosArray) {
   let filteredToDosArray = todosArray.filter((todo) => todo.id != idToRemove);
   if (todosArray.length === filteredToDosArray.length) {
@@ -67,7 +77,20 @@ function deleteToDo(idToRemove, todosArray) {
     fs.writeFileSync(todosFullPath, JSON.stringify(filteredToDosArray));
   }
 }
+function editToDo(options, todosArray) {
+  const { id, title, status } = options;
 
+  if (id === undefined) return console.log("Missing id in options");
+
+  const foundTodo = todosArray.find((todo) => todo.id == id);
+
+  if (!foundTodo) return console.log("This ID doesn't exist");
+
+  foundTodo.title = title !== undefined ? title : foundTodo.title;
+  foundTodo.status = status !== undefined ? status : foundTodo.status;
+
+  fs.writeFileSync(todosFullPath, JSON.stringify(todosArray));
+}
 function parseEditCommand() {
   const args = process.argv.slice(2);
 
@@ -83,19 +106,4 @@ function parseEditCommand() {
   }
 
   return options;
-}
-
-function editToDo(options, todosArray) {
-  const { id, title, status } = options;
-
-  if (id === undefined) return console.log("Missing id in options");
-
-  const foundTodo = todosArray.find((todo) => todo.id == id);
-
-  if (!foundTodo) return console.log("This ID doesn't exist");
-
-  foundTodo.title = title !== undefined ? title : foundTodo.title;
-  foundTodo.status = status !== undefined ? status : foundTodo.status;
-
-  fs.writeFileSync(todosFullPath, JSON.stringify(todosArray));
 }
