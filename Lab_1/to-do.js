@@ -3,6 +3,9 @@ const path = require("path");
 let [, , command] = process.argv;
 
 const todosFullPath = path.join(__dirname, "todos.json");
+
+const options = parseCommandLineArgs();
+
 function readTodosFromFile(todosFullPath) {
   if (fs.existsSync(todosFullPath)) {
     const todosData = fs.readFileSync(todosFullPath, "utf8");
@@ -10,7 +13,6 @@ function readTodosFromFile(todosFullPath) {
   }
   return null;
 }
-
 function loadTodos() {
   try {
     const todos = readTodosFromFile(todosFullPath);
@@ -20,17 +22,14 @@ function loadTodos() {
     return [];
   }
 }
-
 let todosArray = loadTodos();
-
 switch (command) {
   case "add":
     let [, , , toDoText] = process.argv;
     addToDo(toDoText, todosArray);
     break;
   case "edit":
-    let [, , , idToUpdate, UpdateText] = process.argv;
-    editToDo(idToUpdate, UpdateText, todosArray);
+    editToDo(options, todosArray);
     break;
   case "list":
     listToDo(todosArray);
@@ -68,31 +67,35 @@ function deleteToDo(idToRemove, todosArray) {
     fs.writeFileSync(todosFullPath, JSON.stringify(filteredToDosArray));
   }
 }
-function editToDo(idToUpdate, updatedText, todosArray) {
-  const foundTodo = todosArray.find((todo) => todo.id == idToUpdate);
-  if (foundTodo) {
-    foundTodo.title = updatedText;
-    fs.writeFileSync(todosFullPath, JSON.stringify(todosArray));
-  } else {
-    console.log("This Id doesn't exist");
+
+function parseEditCommand() {
+  const args = process.argv.slice(2);
+
+  const options = { title: undefined, status: undefined, id: undefined };
+  const flagMapping = { "-t": "title", "-s": "status", "-id": "id" };
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+
+    if (arg in flagMapping) {
+      options[flagMapping[arg]] = args[i + 1] || null;
+    }
   }
+
+  return options;
 }
 
-// function listToDo(todosArray) {
-//   todosArray.forEach((todo) => {
-//     console.log(`ID: ${todo.id} Title: ${todo.title} Status: ${todo.status}`);
-//   });
-// }
+function editToDo(options, todosArray) {
+  const { id, title, status } = options;
 
-// if (fs.existsSync(todosFullPath)) {
-//   const todos = fs.readFileSync(todosFullPath, "utf8");
-//   try {
-//     todosArray = JSON.parse(todos);
-//   } catch (err) {
-//     todosArray = [];
-//     console.warn("This file was empty. An empty aray was created.");
-//   }
-// } else {
-//   console.log("The file doesn't exist.");
-//   todosArray = [];
-// }
+  if (id === undefined) return console.log("Missing id in options");
+
+  const foundTodo = todosArray.find((todo) => todo.id == id);
+
+  if (!foundTodo) return console.log("This ID doesn't exist");
+
+  foundTodo.title = title !== undefined ? title : foundTodo.title;
+  foundTodo.status = status !== undefined ? status : foundTodo.status;
+
+  fs.writeFileSync(todosFullPath, JSON.stringify(todosArray));
+}
