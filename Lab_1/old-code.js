@@ -56,3 +56,45 @@
 //   function getNextArgValue(args, index) {
 //     return args[index + 1] || null;
 //   }
+
+// const htmlOutput = `
+//   <!DOCTYPE html>
+//   <html lang="en">
+//     <head>
+//       <meta charset="UTF-8" />
+//       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+//       <title>To-do List</title>
+//       <style>
+//       div{
+//         width:50%;
+//         margin: auto;
+//       }
+//         ul {
+//           list-style-type: none;
+//           padding: 10px;
+//         }
+//         li {
+//           background-color: #03a9f45e;                ;
+//           margin: 5px;
+//           padding: 10px;
+//           border-radius: 10px;
+//           box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+//         }
+//         h1{
+//           text-align : center;
+//         }
+//       </style>
+//     </head>
+//     <body>
+//       <h1 >Todo List</h1>
+//       <div>
+//       <ul>
+//         ${todos.map(
+//           (todo) => `<li>Title: ${todo.title} Status: ${todo.status}</li>`
+//         )}
+//       </ul>
+//       </div>
+//     </body>
+//   </html>
+// `;
+// res.end(htmlOutput);

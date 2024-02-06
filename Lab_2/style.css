@@ -1,0 +1,21 @@
+div {
+  width: 40%;
+  margin: auto;
+}
+ul {
+  list-style-type: none;
+  padding: 10px;
+}
+li {
+  background-color: #03a9f45e;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  font-size: 1.2rem;
+  text-transform: capitalize;
+  letter-spacing: 1px;
+}
+h1 {
+  text-align: center;
+}
