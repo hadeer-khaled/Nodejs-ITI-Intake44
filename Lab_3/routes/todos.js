@@ -1,7 +1,9 @@
 const router = require("express").Router();
+const todosControllers = require("../controllers/todos");
 const fs = require("fs");
 const { title } = require("process");
-let todos = JSON.parse(fs.readFileSync("././todos.json", "utf8"));
+
+let todos = todosControllers.getTodos();
 
 router.get("/", (req, res) => {
   if (!req.query.status) {
@@ -17,15 +19,16 @@ router.get("/", (req, res) => {
 router.get("/:id", (req, res) => {
   const requestedToDo = todos.find((todo) => todo.id == req.params.id);
   if (!requestedToDo) return res.status(404).send("Cannot find this Id.");
-  res.status(200).json(requestedToDo);
+  res.status(200).render("todos", { todosArray: [requestedToDo] });
 });
 
 router.delete("/:id", (req, res) => {
   filteredToDosArray = todos.filter((todo) => todo.id != req.params.id);
   if (todos.length === filteredToDosArray.length)
     return res.status(404).send("This To-do doesn't exist");
-  fs.writeFileSync("././todos.json", JSON.stringify(filteredToDosArray));
+  todosControllers.manipulateTodos(filteredToDosArray);
   res.status(200).json(filteredToDosArray);
+  // res.status(200).render("todos", { todosArray: filteredToDosArray });
 });
 
 router.patch("/:id", (req, res) => {
@@ -42,7 +45,8 @@ router.patch("/:id", (req, res) => {
   }
   selectedToDo.title = req.query.title || selectedToDo.title;
   selectedToDo.status = req.query.status || selectedToDo.status;
-  fs.writeFileSync("././todos.json", JSON.stringify(todos));
+  todosControllers.manipulateTodos(todos);
+  console.log(todos);
   res.status(200).json(todos);
 });
 
@@ -61,7 +65,7 @@ router.post("/", (req, res) => {
   newTodo.status = req.body.status || "to-do";
   console.log(req.body);
   todos.push(newTodo);
-  fs.writeFileSync("././todos.json", JSON.stringify(todos));
+  todosControllers.manipulateTodos(todos);
   res.status(200).json(todos);
 });
 function generateIncrementalID() {
