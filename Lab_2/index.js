@@ -100,7 +100,7 @@ const server = http.createServer((req, res) => {
     } //end css
 
     // ----------------------------------------------------------------------------------------
-    if (req.url.split("/")[1] === "astronomy") {
+    if (req.url.split("/")[1] === "astronomy" && !req.url.split("/")[2]) {
       return res.end(`<!DOCTYPE html>
       <html lang="en">
         <head>
@@ -116,6 +116,17 @@ const server = http.createServer((req, res) => {
       `);
     } //end astronomy
 
+    if (req.url === "/astronomy/download") {
+      const imagePath = path.join(__dirname, "astron.jpg");
+      res.setHeader("Content-Type", "application/octet-stream");
+      res.setHeader("Content-Disposition", 'attachment; filename="astron.jpg"');
+      const imageStream = fs.createReadStream(imagePath).pipe(res);
+      imageStream.on("end", () => {
+        res.end();
+      });
+
+      return;
+    }
     if (req.url.split("/")[1] === "astron.jpg") {
       const imagePath = path.join(__dirname, "astron.jpg");
 
@@ -124,18 +135,6 @@ const server = http.createServer((req, res) => {
       const imageStream = fs.createReadStream(imagePath).pipe(res);
       return;
     } //end astron.jpg
-
-    // if (req.url === "/astronomy/download") {
-    //   const imagePath = path.join(__dirname, "astron.jpg");
-    //   res.setHeader("Content-Type", "application/octet-stream");
-    //   res.setHeader("Content-Disposition", 'attachment; filename="astron.jpg"');
-    //   const imageStream = fs.createReadStream(imagePath).pipe(res);
-    //   imageStream.on("end", () => {
-    //     res.end();
-    //   });
-
-    //   return;
-    // }
 
     res.statusCode = 404;
     res.end(`<!DOCTYPE html>
