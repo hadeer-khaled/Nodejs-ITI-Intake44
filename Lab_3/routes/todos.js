@@ -5,15 +5,23 @@ const { title } = require("process");
 
 let todos = todosControllers.getTodos();
 
+// router.get("/", (req, res) => {
+//   if (!req.query.status) {
+//     res.render("todos", { todosArray: todos });
+//   } else {
+//     const filteredTodos = todos.filter(
+//       (todo) => todo.status === req.query.status
+//     );
+//     res.render("todos", { todosArray: filteredTodos });
+//   }
+// });
+
 router.get("/", (req, res) => {
-  if (!req.query.status) {
-    res.render("todos", { todosArray: todos });
-  } else {
-    const filteredTodos = todos.filter(
-      (todo) => todo.status === req.query.status
-    );
-    res.render("todos", { todosArray: filteredTodos });
-  }
+  const { status } = req.query;
+  const filteredTodos = status
+    ? todos.filter((todo) => todo.status === status)
+    : todos;
+  res.render("todos", { todosArray: filteredTodos });
 });
 
 router.get("/:id", (req, res) => {
@@ -22,6 +30,7 @@ router.get("/:id", (req, res) => {
   res.status(200).render("todos", { todosArray: [requestedToDo] });
 });
 
+//------------------------------------------------------------------------------
 router.delete("/:id", (req, res) => {
   filteredToDosArray = todos.filter((todo) => todo.id != req.params.id);
   if (todos.length === filteredToDosArray.length)
@@ -30,7 +39,7 @@ router.delete("/:id", (req, res) => {
   res.status(200).json(filteredToDosArray);
   // res.status(200).render("todos", { todosArray: filteredToDosArray });
 });
-
+//------------------------------------------------------------------------------
 router.patch("/:id", (req, res) => {
   const selectedToDo = todos.find((todo) => todo.id == req.params.id);
   if (!selectedToDo) return res.status(404).send("Cannot find this Id.");
@@ -46,10 +55,9 @@ router.patch("/:id", (req, res) => {
   selectedToDo.title = req.query.title || selectedToDo.title;
   selectedToDo.status = req.query.status || selectedToDo.status;
   todosControllers.manipulateTodos(todos);
-  console.log(todos);
   res.status(200).json(todos);
 });
-
+//------------------------------------------------------------------------------
 router.post("/", (req, res) => {
   const validQuery = Object.keys(req.body).every((key) => {
     return key == "title" || key == "status";
@@ -57,23 +65,13 @@ router.post("/", (req, res) => {
   if (!validQuery) {
     return res.status(400).send(`Invalid todo keys.`);
   }
-  const id = generateIncrementalID();
-  const { title, status } = req.body;
-  const newTodo = {};
-  newTodo.id = id;
-  newTodo.title = req.body.title || "No Tilte";
-  newTodo.status = req.body.status || "to-do";
-  console.log(req.body);
-  todos.push(newTodo);
-  todosControllers.manipulateTodos(todos);
-  res.status(200).json(todos);
+  const { title = "No Title", status = "to-do" } = req.body;
+  const newTodo = { id: generateIncrementalID(), title, status };
+  todosControllers.manipulateTodos(todos.concat(newTodo));
+  res.status(200).json(todosControllers.getTodos());
 });
 function generateIncrementalID() {
-  if (todos.length === 0) {
-    return 1;
-  } else {
-    return todos[todos.length - 1].id + 1;
-  }
+  return todos.length === 0 ? 1 : todos[todos.length - 1].id + 1;
 }
 
 module.exports = router;
