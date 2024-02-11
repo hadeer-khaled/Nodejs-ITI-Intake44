@@ -17,6 +17,7 @@ let todos = todosControllers.getTodos();
 // });
 
 router.get("/", (req, res) => {
+  // Bonus:3
   const { status } = req.query;
   const filteredTodos = status
     ? todos.filter((todo) => todo.status === status)
@@ -35,6 +36,7 @@ router.delete("/:id", (req, res) => {
   filteredToDosArray = todos.filter((todo) => todo.id != req.params.id);
   if (todos.length === filteredToDosArray.length)
     return res.status(404).send("This To-do doesn't exist");
+
   todosControllers.manipulateTodos(filteredToDosArray);
   res.status(200).json(filteredToDosArray);
   // res.status(200).render("todos", { todosArray: filteredToDosArray });
@@ -52,8 +54,11 @@ router.patch("/:id", (req, res) => {
       .status(400)
       .send(`the todo doesn't have ${Object.keys(req.query)}`);
   }
+
   selectedToDo.title = req.query.title || selectedToDo.title;
+  // Bonus 2
   selectedToDo.status = req.query.status || selectedToDo.status;
+
   todosControllers.manipulateTodos(todos);
   res.status(200).json(todos);
 });
@@ -65,9 +70,14 @@ router.post("/", (req, res) => {
   if (!validQuery) {
     return res.status(400).send(`Invalid todo keys.`);
   }
+
+  // Bonus:1
   const { title = "No Title", status = "to-do" } = req.body;
+
   const newTodo = { id: generateIncrementalID(), title, status };
+
   todosControllers.manipulateTodos(todos.concat(newTodo));
+
   res.status(200).json(todosControllers.getTodos());
 });
 function generateIncrementalID() {

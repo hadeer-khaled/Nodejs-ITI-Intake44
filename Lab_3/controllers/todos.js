@@ -1,4 +1,5 @@
 const todosModel = require("../models/todos");
+
 const getTodos = () => {
   const todos = todosModel.getTodos();
   return todos;
