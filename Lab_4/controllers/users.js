@@ -23,9 +23,17 @@ const find = async () => {
 const findById = (id) => Users.findById(id);
 const findOne = (query) => Users.findOne(query);
 
+const deleteAllUsers = async () => {
+  const deletedCount = await Users.deleteMany({}).catch((err) => {
+    throw new CustomError(err.message, 422);
+  });
+  return deletedCount;
+};
+
 module.exports = {
   create,
   findById,
   findOne,
   find,
+  deleteAllUsers,
 };

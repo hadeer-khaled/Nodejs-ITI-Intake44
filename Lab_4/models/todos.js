@@ -1,11 +1,12 @@
 const mongoose = require("mongoose");
 
 const todosSchema = new mongoose.Schema({
-  // userId: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'User',
-  //   required: true
-  // },
+  // ============= issue =========== //
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Users",
+    required: true,
+  },
   title: {
     type: String,
     required: true,
@@ -15,7 +16,7 @@ const todosSchema = new mongoose.Schema({
   status: {
     type: String,
     default: "to-do",
-    enum: ["to-do", "in progress", "done"],
+    enum: ["new", "in progress", "done"],
   },
   tags: {
     type: [String],
@@ -25,6 +26,7 @@ const todosSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  // ============= How ? =========== //
   updatedAt: {
     type: Date,
     default: Date.now,
