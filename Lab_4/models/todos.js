@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
 const todosSchema = new mongoose.Schema({
-  // ============= issue =========== //
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Users",
@@ -24,13 +23,18 @@ const todosSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
+    // default: new Date() ===>  Date when the schema was defined
     default: Date.now,
   },
-  // ============= How ? =========== //
   updatedAt: {
     type: Date,
+
     default: Date.now,
   },
+});
+todosSchema.pre("save", function (next) {
+  this.updatedAt = Date.now;
+  next();
 });
 
 const Todos = mongoose.model("Todos", todosSchema);

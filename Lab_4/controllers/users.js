@@ -27,7 +27,13 @@ const deleteAllUsers = async () => {
   const deletedCount = await Users.deleteMany({}).catch((err) => {
     throw new CustomError(err.message, 422);
   });
-  return deletedCount;
+  return deletedCount.deletedCount;
+};
+const deleteOne = async (id) => {
+  const deletedCount = await Users.deleteOne({ _id: id }).catch((err) => {
+    throw new CustomError(err.message, 422);
+  });
+  return deletedCount.deletedCount;
 };
 
 module.exports = {
@@ -36,4 +42,5 @@ module.exports = {
   findOne,
   find,
   deleteAllUsers,
+  deleteOne,
 };

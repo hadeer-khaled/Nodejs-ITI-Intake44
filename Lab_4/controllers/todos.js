@@ -15,9 +15,25 @@ const create = async (todo) => {
   return newTodo;
 };
 
-const find = async () => {
-  const todos = await Todos.find().exec();
+const find = async (findCond, limit, skip) => {
+  limit = limit || 5;
+  skip = skip || 0;
+  const todos = await Todos.find(findCond)
+    .limit(limit)
+    .skip(skip)
+    .select("title status ")
+    .populate("userId")
+    .exec();
   return todos;
+};
+const findOneAndUpdate = async (findCond, updatedPrt) => {
+  const updatedTodo = await Todos.findOneAndUpdate(findCond, updatedPrt).catch(
+    (err) => {
+      console.log("ERROR: When New Update Todo");
+      throw new CustomError(err.message, 422);
+    }
+  );
+  return updatedTodo;
 };
 
 const findById = (id) => Todos.findById(id);
@@ -42,4 +58,5 @@ module.exports = {
   findById,
   deleteOne,
   deleteAllTodos,
+  findOneAndUpdate,
 };
