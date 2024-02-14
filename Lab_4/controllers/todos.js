@@ -9,7 +9,7 @@ class CustomError extends Error {
 
 const create = async (todo) => {
   const newTodo = await Todos.create(todo).catch((err) => {
-    console.log("ERROR: When New Todo Created");
+    console.log("ERROR: At Todo Creation");
     throw new CustomError(err.message, 422);
   });
   return newTodo;
@@ -26,15 +26,15 @@ const find = async (findCond, limit, skip) => {
     .exec();
   return todos;
 };
-// const findOneAndUpdate = async (findCond, updatedPrt) => {
-//   const updatedTodo = await Todos.findOneAndUpdate(findCond, updatedPrt).catch(
-//     (err) => {
-//       console.log("ERROR: When New Update Todo");
-//       throw new CustomError(err.message, 422);
-//     }
-//   );
-//   return updatedTodo;
-// };
+const findOneAndUpdate = async (findCond, updatedPrt) => {
+  const updatedTodo = await Todos.findOneAndUpdate(findCond, updatedPrt).catch(
+    (err) => {
+      console.log("ERROR: When New Update Todo");
+      throw new CustomError(err.message, 422);
+    }
+  );
+  return updatedTodo;
+};
 
 const findById = (id) => Todos.findById(id);
 
@@ -45,14 +45,8 @@ const deleteOne = async (id) => {
   return deletedCount.deletedCount;
 };
 
-const validateTodoOwner = (requiredTodoUserId, loggedUserId) => {
-  const valid =
-    requiredTodoUserId.toString() !== loggedUserId.toString() ? false : true;
-  return valid;
-};
-
-const deleteAllTodos = async (deleteCond) => {
-  const deletedCount = await Todos.deleteMany(deleteCond).catch((err) => {
+const deleteAllTodos = async () => {
+  const deletedCount = await Todos.deleteMany({}).catch((err) => {
     throw new CustomError(err.message, 422);
   });
   return deletedCount.deletedCount;
@@ -64,6 +58,5 @@ module.exports = {
   findById,
   deleteOne,
   deleteAllTodos,
-  validateTodoOwner,
-  // findOneAndUpdate,
+  findOneAndUpdate,
 };

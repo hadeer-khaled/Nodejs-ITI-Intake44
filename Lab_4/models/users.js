@@ -20,10 +20,6 @@ const usersSchema = new mongoose.Schema({
     minlength: 3,
     maxlength: 15,
   },
-  password: {
-    type: String,
-    required: true,
-  },
   dob: {
     type: Date,
   },
@@ -37,15 +33,14 @@ const usersSchema = new mongoose.Schema({
   },
 });
 
-usersSchema.pre("save", async function preSave() {
-  this.password = await bcrypt.hash(this.password, 10);
-  // next();
-});
+// usersSchema.pre("save", async function preSave() {
+//   this.password = await bcrypt.hash(this.password, 10);
+// });
 
-usersSchema.methods.verifyPassword = async function verifyPassword(password) {
-  const valid = await bcrypt.compare(password, this.password);
-  return valid;
-};
+// usersSchema.methods.verifyPassword = async function verifyPassword(password) {
+//   const valid = await bcrypt.compare(password, this.password);
+//   return valid;
+// };
 
 const Users = mongoose.model("Users", usersSchema);
 module.exports = Users;

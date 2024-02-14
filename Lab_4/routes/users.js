@@ -2,7 +2,6 @@ const router = require("express").Router();
 const { TodosController, UsersController } = require("../controllers");
 const asyncWrapper = require("../lib/async-wrapper");
 const Users = require("../models/users");
-const jwt = require("jsonwebtoken");
 
 router.post("/", async (req, res, next) => {
   const [err, user] = await asyncWrapper(UsersController.create(req.body));
@@ -82,8 +81,9 @@ router.patch("/:id", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-  const token = await UsersController.login({ username, password });
-  return res.json({ token: token });
+  const { username, firstName, password } = req.body;
+  const user = await UsersController.findOne({ username });
+  const valid = await user.verifyPassword(password);
+  return res.json({ valid });
 });
 module.exports = router;
