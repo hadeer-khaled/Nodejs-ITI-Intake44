@@ -26,15 +26,15 @@ const find = async (findCond, limit, skip) => {
     .exec();
   return todos;
 };
-const findOneAndUpdate = async (findCond, updatedPrt) => {
-  const updatedTodo = await Todos.findOneAndUpdate(findCond, updatedPrt).catch(
-    (err) => {
-      console.log("ERROR: When New Update Todo");
-      throw new CustomError(err.message, 422);
-    }
-  );
-  return updatedTodo;
-};
+// const findOneAndUpdate = async (findCond, updatedPrt) => {
+//   const updatedTodo = await Todos.findOneAndUpdate(findCond, updatedPrt).catch(
+//     (err) => {
+//       console.log("ERROR: When New Update Todo");
+//       throw new CustomError(err.message, 422);
+//     }
+//   );
+//   return updatedTodo;
+// };
 
 const findById = (id) => Todos.findById(id);
 
@@ -45,8 +45,14 @@ const deleteOne = async (id) => {
   return deletedCount.deletedCount;
 };
 
-const deleteAllTodos = async () => {
-  const deletedCount = await Todos.deleteMany({}).catch((err) => {
+const validateTodoOwner = (requiredTodoUserId, loggedUserId) => {
+  const valid =
+    requiredTodoUserId.toString() !== loggedUserId.toString() ? false : true;
+  return valid;
+};
+
+const deleteAllTodos = async (deleteCond) => {
+  const deletedCount = await Todos.deleteMany(deleteCond).catch((err) => {
     throw new CustomError(err.message, 422);
   });
   return deletedCount.deletedCount;
@@ -58,5 +64,6 @@ module.exports = {
   findById,
   deleteOne,
   deleteAllTodos,
-  findOneAndUpdate,
+  validateTodoOwner,
+  // findOneAndUpdate,
 };

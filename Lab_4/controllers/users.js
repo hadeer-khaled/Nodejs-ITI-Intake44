@@ -1,4 +1,5 @@
 const Users = require("../models/users");
+const jwt = require("jsonwebtoken");
 
 class CustomError extends Error {
   constructor(message, status) {
@@ -36,6 +37,19 @@ const deleteOne = async (id) => {
   return deletedCount.deletedCount;
 };
 
+const login = async ({ username, password }) => {
+  const user = await Users.findOne({ username });
+  const isValid = await user.verifyPassword(password);
+  if (!isValid) {
+    throw new Error("Un_Authenticated");
+  }
+  const token = jwt.sign({ username, id: user._id }, "jkdhfl", {
+    expiresIn: "2d",
+  });
+
+  return token;
+};
+
 module.exports = {
   create,
   findById,
@@ -43,4 +57,5 @@ module.exports = {
   find,
   deleteAllUsers,
   deleteOne,
+  login,
 };
